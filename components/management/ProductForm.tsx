@@ -27,7 +27,6 @@ interface ProductFormData {
 }
 
 // --- Internal Sub-Component for Nested Options ---
-// Fix: Added explicit props interface and used React.FC to handle JSX special props like 'key' correctly
 interface VariantGroupItemProps {
   control: Control<ProductFormData>;
   register: any;
@@ -119,6 +118,7 @@ const VariantGroupItem: React.FC<VariantGroupItemProps> = ({
 const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdit, categoryId, onSuccess }) => {
   const isEditing = !!productToEdit;
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const addToast = useUIStore(state => state.addToast);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -147,6 +147,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdi
           variantGroups: productToEdit.variantGroups || []
         });
         setImagePreview(productToEdit.image || null);
+        setImageFile(null);
       } else {
         reset({
           name: '',
@@ -155,6 +156,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdi
           variantGroups: []
         });
         setImagePreview(null);
+        setImageFile(null);
       }
     }
   }, [isOpen, productToEdit, reset]);
@@ -171,6 +173,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdi
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const url = URL.createObjectURL(file);
       setImagePreview(url);
     }
@@ -178,15 +181,23 @@ const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdi
 
   const handleRemoveImage = () => {
     setImagePreview(null);
+    setImageFile(null);
   };
 
   const onFormSubmit = async (data: ProductFormData) => {
     setIsSubmitting(true);
     try {
+      let finalImageUrl = imagePreview || undefined;
+
+      // Nếu có tệp mới, hãy tải nó lên Supabase Storage
+      if (imageFile) {
+        finalImageUrl = await mockApi.uploadProductImage(imageFile);
+      }
+
       const payload = {
         ...data,
         category: categoryId,
-        image: imagePreview || undefined, // In real app, this would be uploaded to a server
+        image: finalImageUrl,
         sku: productToEdit?.sku || `SKU-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
         stock: productToEdit?.stock || 100,
         status: productToEdit?.status || 'available'
@@ -203,7 +214,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdi
       onSuccess();
       onClose();
     } catch (error: any) {
-      addToast('danger', error.message || 'Có lỗi xảy ra');
+      addToast('danger', error.message || 'Có lỗi xảy ra khi lưu sản phẩm');
     } finally {
       setIsSubmitting(false);
     }
@@ -294,8 +305,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ isOpen, onClose, productToEdi
                     <label className="flex flex-col items-center justify-center w-full aspect-square rounded-lg border-2 border-dashed border-slate-600 bg-slate-800/50 hover:bg-slate-800 hover:border-blue-500 hover:text-blue-500 text-slate-400 cursor-pointer transition-all duration-200">
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <UploadCloud className="w-12 h-12 mb-4" />
-                        <p className="mb-2 text-sm font-semibold text-center px-4">Click to upload or drag and drop</p>
-                        <p className="text-xs opacity-70">SVG, PNG, JPG or GIF</p>
+                        <p className="mb-2 text-sm font-semibold text-center px-4">Nhấn để tải lên hoặc kéo thả</p>
+                        <p className="text-xs opacity-70">PNG, JPG, JPEG</p>
                       </div>
                       <input 
                         type="file" 

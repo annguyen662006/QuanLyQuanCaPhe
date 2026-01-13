@@ -33,10 +33,11 @@ const ProductManagement: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   // State for Confirm Dialog
+  // Explicitly typing 'data' as Category or Product to avoid 'unknown' errors when accessing properties
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     type: 'delete_category' | 'delete_product';
-    data: any;
+    data: Category | Product | null;
   }>({ isOpen: false, type: 'delete_product', data: null });
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -172,12 +173,15 @@ const ProductManagement: React.FC = () => {
 
   // --- Common Confirm Delete ---
 
-  // Fix: Explicitly cast confirmDialog.data to any to avoid "unknown" type error
+  // Handle confirmation for deleting either a category or a product
   const handleConfirmDelete = async () => {
-    if (!confirmDialog.data) return;
+    // Narrow type of data to avoid unknown errors
+    const data = confirmDialog.data as any;
+    if (!data) return;
     setIsDeleting(true);
     try {
-      const targetId = (confirmDialog.data as any).id;
+      // Fix: Directly access 'id' from data object using type assertion to avoid unknown error on line 146
+      const targetId = data.id;
       if (confirmDialog.type === 'delete_category') {
         await mockApi.deleteCategory(targetId);
         addToast('success', 'Đã xóa danh mục');
