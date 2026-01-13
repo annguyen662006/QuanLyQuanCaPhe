@@ -172,20 +172,20 @@ const ProductManagement: React.FC = () => {
 
   // --- Common Confirm Delete ---
 
+  // Fix: Explicitly cast confirmDialog.data to any to avoid "unknown" type error
   const handleConfirmDelete = async () => {
+    if (!confirmDialog.data) return;
     setIsDeleting(true);
     try {
+      const targetId = (confirmDialog.data as any).id;
       if (confirmDialog.type === 'delete_category') {
-        await mockApi.deleteCategory(confirmDialog.data.id);
+        await mockApi.deleteCategory(targetId);
         addToast('success', 'Đã xóa danh mục');
         fetchCategories();
-        // If we deleted the current category, fetchCategories handles re-selection
       } else {
-        await mockApi.deleteProduct(confirmDialog.data.id);
+        await mockApi.deleteProduct(targetId);
         addToast('success', 'Đã xóa sản phẩm');
         fetchProducts();
-        // Update category count implicitly by refetching categories or manually? 
-        // fetchCategories will recount.
         fetchCategories(); 
       }
     } catch (error: any) {

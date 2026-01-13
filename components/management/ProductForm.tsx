@@ -27,18 +27,21 @@ interface ProductFormData {
 }
 
 // --- Internal Sub-Component for Nested Options ---
-const VariantGroupItem = ({ 
+// Fix: Added explicit props interface and used React.FC to handle JSX special props like 'key' correctly
+interface VariantGroupItemProps {
+  control: Control<ProductFormData>;
+  register: any;
+  groupIndex: number;
+  removeGroup: (index: number) => void;
+  errors: FieldErrors<ProductFormData>;
+}
+
+const VariantGroupItem: React.FC<VariantGroupItemProps> = ({ 
   control, 
   register, 
   groupIndex, 
   removeGroup, 
   errors 
-}: { 
-  control: Control<ProductFormData>; 
-  register: any; 
-  groupIndex: number; 
-  removeGroup: (index: number) => void;
-  errors: FieldErrors<ProductFormData>;
 }) => {
   const { fields, append, remove } = useFieldArray({
     control,

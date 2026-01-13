@@ -20,7 +20,9 @@
     "tailwind-merge": "2.2.2",
     "lucide-react": "0.363.0",
     "@hookform/resolvers": "3.3.4",
-    "react-beautiful-dnd": "13.1.1"
+    "react-beautiful-dnd": "13.1.1",
+    "vite": "^7.3.1",
+    "@vitejs/plugin-react": "^5.1.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

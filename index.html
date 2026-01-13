@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi" class="dark">
 <head>
@@ -18,8 +19,8 @@
             colors: {
               "primary": "#3c83f6",
               "background-light": "#f5f7f8",
-              "background-dark": "#101723", // Unified dark bg
-              "card-dark": "#1f2937", // Unified card bg
+              "background-dark": "#101723",
+              "card-dark": "#1f2937",
               "surface-dark": "#1f2937",
               "success": "#0bda5e",
               "error": "#ef4444",
@@ -72,12 +73,15 @@
     "lucide-react": "https://esm.sh/lucide-react@0.363.0?external=react",
     "@hookform/resolvers/": "https://esm.sh/@hookform/resolvers@3.3.4/",
     "react-dom": "https://esm.sh/react-dom@18.2.0",
-    "react-beautiful-dnd": "https://esm.sh/react-beautiful-dnd@13.1.1?external=react,react-dom"
+    "react-beautiful-dnd": "https://esm.sh/react-beautiful-dnd@13.1.1?external=react,react-dom",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased overflow-hidden h-screen">
     <div id="root" class="h-full w-full"></div>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>
